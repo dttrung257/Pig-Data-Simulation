@@ -1,5 +1,5 @@
 rm(list=ls(all=TRUE))
-setwd("D:/Documents/Pig-Data-Simulation")
+setwd(getwd())
 load("data/JRPData.Rdata")
 wd <- getwd()
 # set library for create plot

@@ -1,6 +1,6 @@
 rm(list=ls(all=TRUE)) 
 
-setwd("D:/Documents/Pig-Data-Simulation")
+setwd(getwd())
 
 #===============================================================
 # Import the data set and attribute a name to it
