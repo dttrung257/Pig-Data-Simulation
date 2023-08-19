@@ -1,4 +1,4 @@
-rm(list=ls(all=TRUE)) 
+rm(list=ls(all=TRUE)) #Clear all variables, function, vv in Global Environment
 
 setwd(getwd())
 
@@ -14,7 +14,7 @@ JRP_NA.0<- read.csv("data/RFI_JRP.csv", header =TRUE, sep=",", dec=".",fileEncod
 # Remove NAs and correct type of data
 #===============================================================
 
-JRP_NA<- JRP_NA.0[!is.na(JRP_NA.0$FEED_INTAKE),]
+JRP_NA <- JRP_NA.0[!is.na(JRP_NA.0$FEED_INTAKE),]
 #Correct type of data
 JRP_NA$ANIMAL_ID <- as.factor(JRP_NA$ANIMAL_ID)
 JRP_NA$AGE <- as.numeric(JRP_NA$AGE)
