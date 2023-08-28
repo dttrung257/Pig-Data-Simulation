@@ -1,4 +1,4 @@
-rm(list=ls(all=TRUE))
+rm(list=ls(all=TRUE)) # Clear all variables, function, etc in Global Environment
 setwd(getwd())
 load("data/JRPData.Rdata")
 wd <- getwd()
@@ -9,9 +9,9 @@ library(reticulate)
 library(fs)
 
 #Order number of Animal_ID
-ids <- unique(JRP_NA$ANIMAL_ID)
+unique.ids <- unique(JRP_NA$ANIMAL_ID)
 #Pig ID
-pig.ids <- JRP_NA$ANIMAL_ID
+ids <- JRP_NA$ANIMAL_ID
 #Age (days)
 ages <- JRP_NA$AGE
 #Daily Feed Intake (kg)
@@ -41,15 +41,15 @@ clear_data <- function(path) {
   }
 }
 
-output.dir <- paste0(wd, '/graphs/Observation/')
+output.dir <- paste0(wd, '/graphs/Observation/') # Folder get output images or html files from graph
 
-clear_data(paste0(output.dir, 'DFI_PNG/'))
-check_path(paste0(output.dir, 'DFI_PNG/'))
-clear_data(paste0(output.dir, 'CFI_PNG/'))
-check_path(paste0(output.dir, 'CFI_PNG/'))
+clear_data(paste0(output.dir, 'DFI_PNG/')) # clear old images in DFI_PNG folder
+check_path(paste0(output.dir, 'DFI_PNG/')) # If the directory does not exist, create a new directory
+clear_data(paste0(output.dir, 'CFI_PNG/')) # clear old images in CFI_PNG folder
+check_path(paste0(output.dir, 'CFI_PNG/')) # If the directory does not exist, create a new directory
 
-for(i in 1:length(ids)) {
-  id <- ids[i]
+for(i in 1:length(unique.ids)) {
+  id <- unique.ids[i]
   data <- JRP_NA[JRP_NA$ANIMAL_ID == id, ]
   DFI.fig <- ggplot(data, aes(x = AGE,y = FEED_INTAKE)) + geom_point(color='blue') + 
     labs(title = paste0('Daily Feed Intake\n','PigID:',id), x='Age (d)', y='Daily Feed Intake, kg')
