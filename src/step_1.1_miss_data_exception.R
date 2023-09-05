@@ -19,6 +19,7 @@ ages <- JRP_NA$AGE
 DFIs <- JRP_NA$FEED_INTAKE
 # Cumulative Feed Intake
 CFIs <- JRP_NA$CFI
+miss.ages.id <- vector()
 
 
 
@@ -61,7 +62,7 @@ for (i in 1:length(unique.ids)) {
 
   # In case, miss data
   if (expected.row > observed.row) {
-    # print(paste0("pig id: ", id))
+    print(paste0("pig id: ", id))
     for (j in 1:length(d)) {
       if (d[j] < 6) {
         pig.miss.ages[[j]] <- seq(
@@ -72,12 +73,11 @@ for (i in 1:length(unique.ids)) {
       }
     }
     if (length(pig.miss.ages) > 0) {
-      miss.ages <- append(miss.ages, pig.miss.ages)
+      miss.ages[[length(miss.ages) + 1]] <- pig.miss.ages
       names(miss.ages)[length(miss.ages)] <- as.character(id)
     }
   }
 }
-print(miss.ages)
 
 # Save results to .Rdata file
 save(JRP_NA, miss.ages, file = "data/JRPData.Rdata")
