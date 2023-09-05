@@ -8,7 +8,8 @@ library(fs)
 library(dplyr)
 
 # Lưu những chuỗi ngày mất dữ liệu của lợn với điều kiện < 5 ngày
-miss.ages <- list()
+lol.miss.ages <- list() # list of lists
+lov.miss.ages <- list() # list of vectors
 # List unique id of Animal
 unique.ids <- unique(JRP_NA$ANIMAL_ID)
 # Animal id
@@ -19,7 +20,6 @@ ages <- JRP_NA$AGE
 DFIs <- JRP_NA$FEED_INTAKE
 # Cumulative Feed Intake
 CFIs <- JRP_NA$CFI
-miss.ages.id <- vector()
 
 
 
@@ -41,7 +41,8 @@ for (i in 1:length(unique.ids)) {
   pig.CFIs <- pig.data$CFI
 
   # Miss ages of pig id = i
-  pig.miss.ages <- list() # Ex: 80  90 91
+  l.pig.miss.ages <- list() # Ex: 80  90 91
+  v.pig.miss.ages <- vector()
 
   # Expected row (In case, don't miss data)
   expected.row <- max(pig.ages) - min(pig.ages) + 1
@@ -65,19 +66,29 @@ for (i in 1:length(unique.ids)) {
     print(paste0("pig id: ", id))
     for (j in 1:length(d)) {
       if (d[j] < 6) {
-        pig.miss.ages[[j]] <- seq(
+        l.pig.miss.ages[[j]] <- seq(
           before.miss.rows[j, ]$AGE + 1,
           before.miss.rows[j, ]$AGE + d[j] - 1,
           1
         )
+        v.pig.miss.ages <- c(v.pig.miss.ages, seq(
+          before.miss.rows[j, ]$AGE + 1,
+          before.miss.rows[j, ]$AGE + d[j] - 1,
+          1
+        ))
       }
     }
-    if (length(pig.miss.ages) > 0) {
-      miss.ages[[length(miss.ages) + 1]] <- pig.miss.ages
-      names(miss.ages)[length(miss.ages)] <- as.character(id)
+    if (length(l.pig.miss.ages) > 0) {
+      lol.miss.ages[[length(lol.miss.ages) + 1]] <- l.pig.miss.ages
+      lov.miss.ages[[length(lov.miss.ages) + 1]] <- v.pig.miss.ages
+      names(lol.miss.ages)[length(lol.miss.ages)] <- as.character(id)
+      names(lov.miss.ages)[length(lov.miss.ages)] <- as.character(id)
     }
   }
 }
 
+print(lol.miss.ages)
+print(lov.miss.ages)
+
 # Save results to .Rdata file
-save(JRP_NA, miss.ages, file = "data/JRPData.Rdata")
+save(JRP_NA, lol.miss.ages, lov.miss.ages, file = "data/JRPData.Rdata")

@@ -18,12 +18,10 @@ DFIs <- JRP_NA$FEED_INTAKE
 # Cumulative Feed Intake
 CFIs <- JRP_NA$CFI
 
-print(miss.ages)
-print(as.vector(JRP_NA %>% filter(ANIMAL_ID == 5781) %>% select(AGE)))
-
 # length(unique.ids)
-for (i in 1:length(unique.ids)) {
-  id <- unique.ids[i]
+for (i in 1:length(miss.ages)) {
+  id <- as.numeric(names(miss.ages)[i])
+  print(JRP_NA[JRP_NA$ANIMAL_ID == id, ])
 }
 
 #Save results to .Rdata file
