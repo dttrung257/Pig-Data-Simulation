@@ -1,7 +1,16 @@
-rm(list=ls(all=TRUE)) # Clear all variables, function, etc in Global Environment
+# Clear all variables, function, etc in Global Environment
+rm(list = ls(all = TRUE))
+
 setwd(getwd())
+# Load data
 load("data/JRPData.Rdata")
+
+# Load functions
+source("src/funcs.R")
+
+# Get working directory
 wd <- getwd()
+
 # set library for create plot
 library(ggplot2)
 library(htmlwidgets)
@@ -18,28 +27,6 @@ ages <- JRP_NA$AGE
 DFIs <- JRP_NA$FEED_INTAKE
 #Cumulative Feed Intake
 CFIs <- JRP_NA$CFI
-
-# If the directory does not exist, create a new directory
-check_path <- function(path) {
-  if (!dir_exists(path)) {
-    dir_create(path)
-  }
-}
-
-# Clear all directories and files in folder but don't delete folder
-clear_data <- function(path) {
-  if (dir_exists((path))) {
-    items <- dir_ls(path)
-    
-    for (item in items) {
-      if (is_dir(item)) {
-        dir_delete(item, recursive = TRUE, force = TRUE)
-      } else {
-        file_delete(item)
-      }
-    }
-  }
-}
 
 output.dir <- paste0(wd, '/graphs/Observation/') # Folder get output images or html files from graph
 

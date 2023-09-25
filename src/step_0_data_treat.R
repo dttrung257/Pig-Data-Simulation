@@ -1,4 +1,5 @@
-rm(list=ls(all=TRUE)) # Clear all variables, function, etc in Global Environment
+# Clear all variables, function, etc in Global Environment
+rm(list = ls(all = TRUE))
 
 setwd(getwd())
 #===============================================================

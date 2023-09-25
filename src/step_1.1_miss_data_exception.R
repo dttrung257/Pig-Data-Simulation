@@ -1,6 +1,14 @@
-rm(list = ls(all = TRUE)) # Clear all variables, function, etc in Global Environment
+# Clear all variables, function, etc in Global Environment
+rm(list = ls(all = TRUE))
+
 setwd(getwd())
+# Load data
 load("data/JRPData.Rdata")
+
+# Load functions
+# source("src/funcs.R")
+
+# Get working directory
 wd <- getwd()
 
 library(ggplot2)
