@@ -84,19 +84,16 @@ for (i in 1:length(unique.ids)) {
   color_mapping <- c("Xs.0" = "green", "other" = "red")
   
   # Create a new column for color based on the value of X
-  print(CFI.target.per.day$X)
-  print(Xs.0)
-  CFI.target.per.day$color <- ifelse(CFI.target.per.day$X < Xs.0, "Xs.0", "other")
+  CFI.target.per.day$color <- ifelse(CFI.target.per.day$X <= Xs.0 & func.type == "QLM", "Quadratic", "Linear")
   
-  # Create the ggplot
-  CFI.fig <- ggplot(CFI.target.per.day, aes(x = X, y = target_CFI.0, color = color)) +
-    geom_line() +
-    scale_color_manual(values = color_mapping) +  # Specify the color mapping
+  # Create the ggplot using geom_segment
+  CFI.fig <- ggplot(CFI.target.per.day, aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X), color = color)) +
+    geom_segment() +
     labs(
       title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
       x = 'Age(days)', y = 'Cummulative Feed Intake'
     )
-  ggsave(filename = paste0(output.dir, 'TTC_PNG/', id, ".", "Target.CFI", ".png"), plot = CFI.fig)
+  ggsave(filename = paste0(output.dir, 'TTC_PNG/', id, ".", "Target.CFI", ".", func.type, ".png"), plot = CFI.fig)
   
   id.1 <- rep(id,dim(pig.data)[1])
   func.type <- rep(func.type, dim(pig.data)[1])
