@@ -81,18 +81,39 @@ for (i in 1:length(unique.ids)) {
   target_CFI.0 <- as.numeric(unlist(predict.target.trajectory(par_init, X)[1]))
   target_DFI.0 <- as.numeric(unlist(predict.target.trajectory(par_init, X)[2]))
   CFI.target.per.day <- data.frame(X, target_CFI.0)
-  color_mapping <- c("Xs.0" = "green", "other" = "red")
   
   # Create a new column for color based on the value of X
-  CFI.target.per.day$color <- ifelse(CFI.target.per.day$X <= Xs.0 & func.type == "QLM", "Quadratic", "Linear")
-  
+  CFI.target.per.day$QLM_COLOR <- ifelse(CFI.target.per.day$X <= Xs.0 & func.type == "QLM", "Quadratic", "Linear")
+  CFI.fig <- NULL
+  if (func.type == "QLM") {
   # Create the ggplot using geom_segment
-  CFI.fig <- ggplot(CFI.target.per.day, aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X), color = color)) +
-    geom_segment() +
-    labs(
-      title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
-      x = 'Age(days)', y = 'Cummulative Feed Intake'
-    )
+    CFI.fig <- ggplot(CFI.target.per.day,
+                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+      geom_segment(aes(color = QLM_COLOR)) +
+      labs(
+        title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
+        x = 'Age(days)', y = 'Cummulative Feed Intake'
+      ) + 
+      scale_color_manual(values = c("Quadratic" = "purple", "Linear" = "yellow"))
+  } else if (func.type == "QDR") {
+    CFI.fig <- ggplot(CFI.target.per.day,
+                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+      geom_segment(aes(color = "Quadratic")) +
+      labs(
+        title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
+        x = 'Age(days)', y = 'Cummulative Feed Intake'
+      ) + 
+      scale_color_manual(values = c("Quadratic" = "purple"))
+  } else {
+    CFI.fig <- ggplot(CFI.target.per.day,
+                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+      geom_segment(aes(color = "Linear")) +
+      labs(
+        title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
+        x = 'Age(days)', y = 'Cummulative Feed Intake'
+      ) + 
+      scale_color_manual(values = c("Linear" = "yellow"))
+  }
   ggsave(filename = paste0(output.dir, 'TTC_PNG/', id, ".", "Target.CFI", ".", func.type, ".png"), plot = CFI.fig)
   
   id.1 <- rep(id,dim(pig.data)[1])
