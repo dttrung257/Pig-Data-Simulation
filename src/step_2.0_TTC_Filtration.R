@@ -29,19 +29,19 @@ for (i in 1:length(unique.ids)) {
   id <- unique.ids[i]
   print(paste0('id: ', id))
   pig.data <- JRP.estimate[JRP.estimate$ANIMAL_ID==id,]
-  X <- as.numeric(pig.data$AGE)
-  expected.ages <- max(X) - min(X) +1
+  x <- as.numeric(pig.data$AGE)
+  expected.ages <- max(x) - min(x) +1
   
-  if(length(X) < expected.ages) {
+  if(length(x) < expected.ages) {
     next
   }
   Y <- as.numeric(pig.data$CFI)
   dfi <- as.numeric(pig.data$DFI)
-  data.xy <- as.data.frame(cbind(X,Y))
+  data.xy <- as.data.frame(cbind(x,Y))
   
   ### initial parameters for estimate parameters
-  firstday <- X[1]
-  lastday <- X[length(X)]
+  firstday <- x[1]
+  lastday <- x[length(x)]
   
   ### provide set of initial parameter
   Xs.1 <- round(seq(firstday + 1, lastday - 1, len = 30), digits = 0)
@@ -51,13 +51,13 @@ for (i in 1:length(unique.ids)) {
   for (day in 1:length(Xs.1)) {
     DFI <- pig.data[pig.data$AGE == Xs.1[day],]$FEED_INTAKE
     CFI <- pig.data[pig.data$AGE == Xs.1[day],]$CFI
-    DFI.param <- c(DFI.param,DFI)
-    CFI.param <- c(CFI.param,CFI)
+    DFI.param <- c(DFI.param, DFI)
+    CFI.param <- c(CFI.param, CFI)
   }
   st1 <- data.frame(X0.1, Xs.1, DFI.param, CFI.param)
   names(st1) <- c("X0","Xs", "DFIs","CFIs")
   # fit model to data 
-  st2 <- nls2(Y ~ nls.func(X0, Xs, DFIs, CFIs),
+  st2 <- nls2(Y ~ nls.func.2(X0, Xs, DFIs, CFIs),
               data.xy,
               start = st1,
               algorithm = "brute-force")
@@ -65,8 +65,7 @@ for (i in 1:length(unique.ids)) {
   par_init <- coef(st2)
   print(par_init)
   
-  c <- target.coef(par_init)[3]
-  print(paste0('c', c))
+  c <- target.coef.2(par_init)[3]
   Xs.0 <- par_init[2] # Quadratic to linear point
   if (c < 0) {
     func.type <- "LM"
@@ -75,43 +74,45 @@ for (i in 1:length(unique.ids)) {
   } else {
     func.type <- "QDR"
   }
-  print(paste("Functype of id: ", id, func.type))
+  print(paste0("Functype of id: ", id, " ", func.type))
+  print(paste0("Xs: ", Xs.0))
   
   # Plot Function with initial parameters to data
-  target_CFI.0 <- as.numeric(unlist(predict.target.trajectory(par_init, X)[1]))
-  target_DFI.0 <- as.numeric(unlist(predict.target.trajectory(par_init, X)[2]))
-  CFI.target.per.day <- data.frame(X, target_CFI.0)
+  target_CFI.0 <- as.numeric(unlist(predict.target.trajectory.2(par_init, x)[1]))
+  target_DFI.0 <- as.numeric(unlist(predict.target.trajectory.2(par_init, x)[2]))
+  CFI.target.per.day <- data.frame(x, target_CFI.0)
   
   # Create a new column for color based on the value of X
-  CFI.target.per.day$QLM_COLOR <- ifelse(CFI.target.per.day$X <= Xs.0 & func.type == "QLM", "Quadratic", "Linear")
+  CFI.target.per.day$QLM_COLOR <- ifelse(CFI.target.per.day$x <= Xs.0 & func.type == "QLM", "Quadratic", "Linear")
+  
   CFI.fig <- NULL
   if (func.type == "QLM") {
   # Create the ggplot using geom_segment
     CFI.fig <- ggplot(CFI.target.per.day,
-                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+                      aes(x = x, xend = lead(x, order_by = x), y = target_CFI.0, yend = lead(target_CFI.0, order_by = x))) +
       geom_segment(aes(color = QLM_COLOR)) +
       labs(
         title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
         x = 'Age(days)', y = 'Cummulative Feed Intake'
-      ) + 
+      ) +
       scale_color_manual(values = c("Quadratic" = "purple", "Linear" = "yellow"))
   } else if (func.type == "QDR") {
     CFI.fig <- ggplot(CFI.target.per.day,
-                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+                      aes(x = x, xend = lead(x, order_by = x), y = target_CFI.0, yend = lead(target_CFI.0, order_by = x))) +
       geom_segment(aes(color = "Quadratic")) +
       labs(
         title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
         x = 'Age(days)', y = 'Cummulative Feed Intake'
-      ) + 
+      ) +
       scale_color_manual(values = c("Quadratic" = "purple"))
   } else {
     CFI.fig <- ggplot(CFI.target.per.day,
-                      aes(x = X, xend = lead(X, order_by = X), y = target_CFI.0, yend = lead(target_CFI.0, order_by = X))) +
+                      aes(x = x, xend = lead(x, order_by = x), y = target_CFI.0, yend = lead(target_CFI.0, order_by = x))) +
       geom_segment(aes(color = "Linear")) +
       labs(
         title = paste("Cummulative Feed Intake:", id, "\nFunction Type:", func.type),
         x = 'Age(days)', y = 'Cummulative Feed Intake'
-      ) + 
+      ) +
       scale_color_manual(values = c("Linear" = "yellow"))
   }
   ggsave(filename = paste0(output.dir, 'TTC_PNG/', id, ".", "Target.CFI", ".", func.type, ".png"), plot = CFI.fig)
@@ -121,11 +122,11 @@ for (i in 1:length(unique.ids)) {
   pig.data$FuncType <- func.type
   
   pig.data$id.1 <- id.1
-  ITC.Data.1 <- rbind(ITC.Data.1 , pig.data)
+  ITC.Data.1 <- rbind(ITC.Data.1, pig.data)
 }
 
-CFI.LM <- subset(ITC.Data.1, func.type == "LM")
-CFI.QDR <- subset(ITC.Data.1, func.type == "QDR")
-CFI.QLM <- subset(ITC.Data.1, func.type == "QLM")
+CFI.LM <- unique(ITC.Data.1[ITC.Data.1$FuncType == "LM", ]$ANIMAL_ID)
+CFI.QDR <- unique(ITC.Data.1[ITC.Data.1$FuncType == "QDR", ]$ANIMAL_ID)
+CFI.QLM <- unique(ITC.Data.1[ITC.Data.1$FuncType == "QLM", ]$ANIMAL_ID)
 save(ITC.Data.1, CFI.LM, CFI.QDR, CFI.QLM, 
      file = "data/JRPData_TTC.RData")

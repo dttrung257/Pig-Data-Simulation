@@ -8,7 +8,6 @@ setwd(getwd())
 
 # Import data to R
 JRP_NA.0<- read.csv('data/RFI_JRP.csv', header = TRUE, sep = ',', dec = '.', fileEncoding = 'UTF-8')
-
 #===============================================================
 # Remove NAs and correct type of data
 #===============================================================

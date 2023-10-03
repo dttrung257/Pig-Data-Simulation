@@ -38,14 +38,15 @@ check_path(paste0(output.dir, 'CFI_PNG/')) # If the directory does not exist, cr
 for(i in 1:length(unique.ids)) {
   id <- unique.ids[i]
   data <- JRP_NA[JRP_NA$ANIMAL_ID == id, ]
-  DFI.fig <- ggplot(data, aes(x = AGE,y = FEED_INTAKE)) + geom_point(color='grey') + 
+  DFI.fig <- ggplot(data, aes(x = AGE,y = FEED_INTAKE)) + geom_point(color='green') +
     labs(title = paste0('Daily Feed Intake\n','PigID:',id), x='Age (d)', y='Daily Feed Intake, kg')
+  ggsave(filename = paste0(output.dir, 'DFI_PNG/', id, ".", "DFI", ".png"), 
+         plot = DFI.fig, width = 8, height = 8)  
   
-  ggsave(filename = paste0(output.dir, 'DFI_PNG/', id, ".", "DFI", ".png"),plot = DFI.fig)  
-  
-  CFI.fig <- ggplot(data, aes(x = AGE, y = CFI)) + geom_point(color='grey') + 
+  CFI.fig <- ggplot(data, aes(x = AGE, y = CFI)) + geom_point(color='green') + 
     labs(title=paste0('Cumulative Feed Intake\n','PigID:',id), x='Age (d)', y='Cumulative Feed Intake, kg')
-  ggsave(filename = paste0(output.dir, 'CFI_PNG/', id, ".", "CFI", ".png"),plot = CFI.fig)  
-  
+  ggsave(filename = paste0(output.dir, 'CFI_PNG/', id, ".", "CFI", ".png"), 
+         plot = CFI.fig, width = 8, height = 8)  
+  print(paste0("Saved plot for pig id: ", id))
 }
 

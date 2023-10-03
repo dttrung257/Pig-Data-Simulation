@@ -112,28 +112,28 @@ check_path(paste0(output.dir, 'DFI_PNG/')) # If the directory does not exist, cr
 clear_data(paste0(output.dir, 'CFI_PNG/')) # clear old images in CFI_PNG folder
 check_path(paste0(output.dir, 'CFI_PNG/')) # If the directory does not exist, create a new directory
 
-# for(i in 1:length(unique.ids)) {
-#   id <- unique.ids[i]
-#   if (id %in% estimate.point$ANIMAL_ID | id == 5525) {
-#     data <- JRP.estimate[JRP.estimate$ANIMAL_ID == id, ]
-#     temp_df <- data.frame(ANIMAL_ID = id, AGE = data$AGE)
-#     merged_df <- merge(temp_df, estimate.point, by = c("ANIMAL_ID", "AGE"))
-#     data$type <- ifelse(data$ANIMAL_ID %in% merged_df$ANIMAL_ID & data$AGE %in% merged_df$AGE, 'Estimation', 'Observation')
-#     DFI.fig <- ggplot(data, aes(x = AGE, y = FEED_INTAKE, color = type)) +
-#       geom_point() +
-#       labs(title = paste0('Daily Feed Intake\n', 'PigID:', id), x = 'Age (days)', y = 'Daily Feed Intake, kg') +
-#       scale_color_manual(values = c('Observation' = 'grey', 'Estimation' = 'blue'))
-# 
-#     ggsave(filename = paste0(output.dir, 'DFI_PNG/', id, ".", "DFI", ".png"), plot = DFI.fig)
-# 
-#     CFI.fig <- ggplot(data, aes(x = AGE, y = CFI, color = type)) +
-#       geom_point() +
-#       labs(title = paste0('Cumulative Feed Intake\n', 'PigID:', id), x = 'Age (d)', y = 'Cumulative Feed Intake, kg') +
-#       scale_color_manual(values = c('Observation' = 'grey', 'Estimation' = 'blue'))
-# 
-#     ggsave(filename = paste0(output.dir, 'CFI_PNG/', id, ".", "CFI", ".png"), plot = CFI.fig)
-#   }
-# }
+for(i in 1:length(unique.ids)) {
+  id <- unique.ids[i]
+  if (id %in% estimate.point$ANIMAL_ID | id == 5525) {
+    data <- JRP.estimate[JRP.estimate$ANIMAL_ID == id, ]
+    temp_df <- data.frame(ANIMAL_ID = id, AGE = data$AGE)
+    merged_df <- merge(temp_df, estimate.point, by = c("ANIMAL_ID", "AGE"))
+    data$type <- ifelse(data$ANIMAL_ID %in% merged_df$ANIMAL_ID & data$AGE %in% merged_df$AGE, 'Estimation', 'Observation')
+    DFI.fig <- ggplot(data, aes(x = AGE, y = FEED_INTAKE, color = type)) +
+      geom_point() +
+      labs(title = paste0('Daily Feed Intake\n', 'PigID:', id), x = 'Age (days)', y = 'Daily Feed Intake, kg') +
+      scale_color_manual(values = c('Observation' = '#333333', 'Estimation' = 'blue'))
+
+    ggsave(filename = paste0(output.dir, 'DFI_PNG/', id, ".", "DFI", ".png"), plot = DFI.fig, width = 8, height = 8)
+
+    CFI.fig <- ggplot(data, aes(x = AGE, y = CFI, color = type)) +
+      geom_point() +
+      labs(title = paste0('Cumulative Feed Intake\n', 'PigID:', id), x = 'Age (d)', y = 'Cumulative Feed Intake, kg') +
+      scale_color_manual(values = c('Observation' = '#333333', 'Estimation' = 'blue'))
+
+    ggsave(filename = paste0(output.dir, 'CFI_PNG/', id, ".", "CFI", ".png"), plot = CFI.fig, width = 8, height = 8)
+  }
+}
 
 save(JRP_NA, # Step 0
      lol.miss.ages, lov.miss.ages, JRP.estimate, # Step 1
