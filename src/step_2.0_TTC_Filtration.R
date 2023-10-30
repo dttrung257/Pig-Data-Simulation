@@ -117,7 +117,7 @@ for (i in 1:length(unique.ids)) {
   }
   ggsave(filename = paste0(output.dir, 'TTC_PNG/', id, ".", "Target.CFI", ".", func.type, ".png"), plot = CFI.fig)
   
-  id.1 <- rep(id,dim(pig.data)[1])
+  id.1 <- rep(i,dim(pig.data)[1])
   func.type <- rep(func.type, dim(pig.data)[1])
   pig.data$FuncType <- func.type
   
