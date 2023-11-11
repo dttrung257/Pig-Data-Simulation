@@ -184,6 +184,7 @@ for (i in 1:length(unique.ids)) {
   #Add one column about the slope of DFI to the function
   Slope <- NULL
   for(ii in 1:dim(param.2)[1]){
+    Slope.1 <-0
     if(param.2[ii,]$c < 0){
       Slope.1 <- -1
     } else {

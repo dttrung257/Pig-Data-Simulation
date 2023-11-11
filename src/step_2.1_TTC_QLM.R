@@ -29,9 +29,11 @@ ITC.param.pos2 <- data.frame(ANIMAL_ID=factor(),
 unique.ids <- unique(CFI.QLM)
 unique.ids <- unique.ids[!unique.ids %in% c(5320,5470)]
 for (i in seq_along(unique.ids)) {
+  
   id <- unique.ids[i]
   pig.data <- ITC.Data.1[ITC.Data.1$ANIMAL_ID==id,]
   id.1 <- unique(as.numeric(pig.data$id.1))
+  # CFI có dạng Y = hàm(x) 
   x <- as.numeric(pig.data$AGE)
   Y <- as.numeric(pig.data$CFI)
   dfi <- as.numeric(pig.data$FEED_INTAKE)
@@ -215,7 +217,7 @@ for (i in seq_along(unique.ids)) {
                                  "id.1")
   Slope <- NULL
   for(ii in 1:dim(param.aggregate)[1]){
-    Slope.1 <- 0
+    Slope.1 <- -1
     if(param.aggregate[ii,]$c < 0){
       Slope.1 <- -1
     } else {
